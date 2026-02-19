@@ -892,7 +892,7 @@ public class UploadAction extends Action {
         //A.log("uploadDataFile() docBase:" + docBase);
 		String fileName = testFile.getFileName();
         String filePath = docBase + testFile.getFileName();
-        boolean isSuccess = Utility.copyFile(theForm.getTestFile(), filePath);
+        boolean isSuccess = Utility.copyFormFile(theForm.getTestFile(), filePath, false);
 
         String UNMATCHED_FUNCTION = "UNMATCHED_FUNCTION";
 		String messageStr = UNMATCHED_FUNCTION;

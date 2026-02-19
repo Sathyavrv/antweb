@@ -39,15 +39,17 @@ public class SpecimenUploader extends Uploader {
         String workingDir = AntwebProps.getWorkingDir();
         FileUtil.makeDir(workingDir);
 
+        String specimenFileName;
+
         if (formFileName.endsWith(".zip")) {  // was: contains("zip")
-            String specimenFileName = "specimen" + group.getId() + ".txt"; // was: workingDir +
+            specimenFileName = "specimen" + group.getId() + ".txt"; // was: workingDir +
             String groupName = "group" + group.getId();
             //            A.log("uploadSpecimenFile() tempDirName:" + tempDirName + " specimenFileName:" + specimenFileName);
             copyAndUnzipFile(theForm.getTheFile(), groupName, specimenFileName);
             //copyAndUnzipFile(theForm.getTheFile(), group, tempDirName, specimenFileName);
         } else {
             // copy from uploader's fileName to the biotaFile name.
-            String specimenFileName = workingDir + "specimen" + group.getId() + ".txt";
+            specimenFileName = workingDir + "specimen" + group.getId() + ".txt";
             A.log("uploadSpecimenFile() theFile:" + theForm.getTheFile() + " specimenFileName:" + specimenFileName);
             Utility.copyFormFile(theForm.getTheFile(), specimenFileName, true); // debugOn
         }
