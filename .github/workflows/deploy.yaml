@@ -20,5 +20,4 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Remote Server
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "bash .github/scripts/deploy.sh"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < .github/scripts/deploy.sh
