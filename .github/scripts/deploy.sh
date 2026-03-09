@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euxo pipefail
 
 # Let's assume antweb is in home directory of the ssh user
 cd $HOME/antweb
