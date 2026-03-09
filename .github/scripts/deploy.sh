@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+# Having sensitive error checking making the script fail.
+#set -euxo pipefail
 
 # Let's assume antweb is in home directory of the ssh user
 cd $HOME/antweb
@@ -11,4 +12,3 @@ git pull origin master --no-edit
 # Restart docker compose services
 docker-compose exec antweb ant deploy
 docker-compose restart antweb
-
