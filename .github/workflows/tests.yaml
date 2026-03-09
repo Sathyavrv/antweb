@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test Caddy Build
+        run: |
+          cd docker/caddy
+          docker build -t antweb/caddy:dev .
+
+      - name: Test API Build
+        run: |
+          cd docker/api
+          docker build -t antweb/api:dev .
+
+      - name: Test Antweb Build
+        run: |
+          cd docker/api
+          docker build -t antweb/antweb:dev .
