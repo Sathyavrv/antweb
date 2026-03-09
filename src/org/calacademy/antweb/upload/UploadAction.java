@@ -1001,6 +1001,9 @@ public class UploadAction extends Action {
 		LogMgr.emptyFile(fullPath);
 		LogMgr.appendFile(fullPath, Specimen.getTabDelimHeader());
 
+		StringBuilder validationErrors = new StringBuilder();
+		int errorCount = 0;
+
 		while (line != null) {
             //A.log("getSpecimenList() lineNum:" + lineNum + " line:" + line);
 
@@ -1017,26 +1020,53 @@ public class UploadAction extends Action {
 
 			++lineNum;
 			if (line == null) continue;
-			boolean parseLine = true;
-            String specimenCode = line;
-            if (specimenCode == null || specimenCode.contains(" ")) {
-            	messageStr = "<h1>Specimen List</h1><br><br>There seems to be a file format error in file: " + fileName;
-            	s_log.error(messageStr);
-            	return messageStr;
+			String specimenCode = line.trim();
+			if (specimenCode.isEmpty()) {
+				line = in.readLine();
+				continue;
 			}
-			//if (lineNum < 5) A.log("output specimen:" + specimenCode);
 
-			Specimen specimen = specimenDb.getSpecimen(specimenCode);
+			if (specimenCode.contains(" ")) {
+				validationErrors.append("Line " + lineNum + ": specimen code \""
+					+ specimenCode + "\" contains a space character, which is not permitted.<br>");
+				errorCount++;
+				line = in.readLine();
+				continue;
+			}
+
+			try {
+				if (!specimenDb.exists(specimenCode)) {
+					validationErrors.append("Line " + lineNum + ": specimen code \""
+						+ specimenCode + "\" was not found in the database.<br>");
+					errorCount++;
+					line = in.readLine();
+					continue;
+				}
+
+				Specimen specimen = specimenDb.getSpecimen(specimenCode);
 			//String taxonName = specimen.getTaxonName();
 			//Taxon taxon = taxonDb.getTaxon(taxonName);
-            String outputLine = specimen.getTabDelimString();
-            LogMgr.appendFile(fullPath, outputLine);
+				String outputLine = specimen.getTabDelimString();
+				LogMgr.appendFile(fullPath, outputLine);
+			} catch (Exception e) {
+				validationErrors.append("Line " + lineNum + ": specimen code \""
+					+ specimenCode + "\" caused an error: " + e.getMessage() + "<br>");
+				errorCount++;
+			}
 
 			line = in.readLine();
 		} // end while loop through lines
 
 		A.log("getSpecimenList() lineNum:" + lineNum + " line:" + line);
-		//http://localhost/antweb//tmp/specimenList.txt
+				//http://localhost/antweb//tmp/specimenList.txt
+
+		if (errorCount > 0) {
+			messageStr = "<h1>Specimen List</h1><br><br>"
+				+ "<b>Upload failed with " + errorCount + " error(s) in file: " + fileName + "</b><br><br>"
+				+ validationErrors.toString();
+			s_log.error("getSpecimenList() " + errorCount + " validation errors in file: " + fileName);
+			return messageStr;
+		}
 
 		messageStr = "<h2>Specimen List</h2><br><br>";
 		messageStr += "<b>'Right-click' and 'Save Link As' to download:</b><br> <a href=\"" + fullUrl + "\">" + outputPath + "</a>";

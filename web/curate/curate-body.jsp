@@ -143,16 +143,35 @@ Need Help? Check out the <a href="<%= domainApp %>/documentation.do" target="new
 
 <!-- Universal Specimen Upload -->
         <!-- Antweb, TaxonWorks, or GBIF Specimen (file or Zip File) Upload -->
-
-        <html:form method="POST" action="upload.do" enctype="multipart/form-data">
+        
+        <script type="text/javascript">
+            function validateZipUpload(form) {
+                var fileInput = form.elements['theFile'];
+                if (!fileInput || !fileInput.value) {
+                    alert('Please select a ZIP file to upload.');
+                    return false;
+                }
+                if (!fileInput.value.toLowerCase().endsWith('.zip')) {
+                    alert('Error: Only ZIP files are allowed.');
+                    return false;
+                }
+                return true;
+            }
+        </script>
+        <html:form method="POST" action="upload.do" enctype="multipart/form-data" onsubmit="return validateZipUpload(this);">
 
             <div class="admin_action_item">
             <br>
-                <div class="action_desc"><b>Upload</b> Specimen File or Zip File:<br>&nbsp;&nbsp;&nbsp;</div>
+                <div class="action_desc"><b>Upload</b> Zip File:<br>&nbsp;&nbsp;&nbsp;</div>
                 <div class="action_browse">
-                    <html:file property="theFile" />
+                    <html:file property="theFile" accept=".zip" />
                 </div>
                 <div class="clear"></div>
+                
+                <div style="color: red; font-weight: bold; margin: 10px 0;">
+                    1. Only ZIP Files Allowed<br>
+                    2. If you see Cloudflare timeout just go back to the homepage.
+                </div>
 
             <%
             if (LoginMgr.isAdmin(accessLogin)) { %>
@@ -711,7 +730,7 @@ if (speciesListList != null && !speciesListList.isEmpty()) { %>
     <input type="hidden" name="successkey" value="null" />
     <div class="admin_action_module">
         <div class="admin_action_item">
-            <div class="action_desc"><b>Upload</b> Data File<br>&nbsp;&nbsp;&nbsp;Press submit for documentation</div>
+            <div class="action_desc"><b>Upload</b> Data File<br>&nbsp;&nbsp;&nbsp;For specimen list lookup: upload a .txt file with 'specimen' in the filename (one specimen code per line, no spaces)<br></div>
             <div class="action_browse">
   <html:file property="testFile" />
             </div>
